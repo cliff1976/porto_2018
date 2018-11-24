@@ -1,20 +1,30 @@
 #/bin/sh
 
-# do a leading-zero filename change for images 1.jpg through 9.jpg
-# for i in 1.jpg 2.jpg 3.jpg 4.jpg 5.jpg 6.jpg 7.jpg 8.jpg 9.jpg;
-# do
-#     echo "Renaming $i to 0${i/.jpg}.jpg"
-#     mv "$i" "0${i/.jpg}".jpg;
-# done
-#
-#
-# # do a leading zero filename change for images like ??.jpg
-# for i in ??.jpg;
-# do
-#     echo "Renaming $i to 0${i/.jpg}.jpg"
-#     mv "$i" "0${i/.jpg}".jpg;
-# done
+# step 0:  photo files are already in our working directory.
 
+# replace commas with nothing and spaces in filenames with underscores
+for f in *\,*.jpg
+do
+  mv "$f" "${f//\,/}"
+done
+
+for f in *\ *.jpg
+do
+  mv "$f" "${f// /_}"
+done
+#
+#
+
+# Use exiftool to extract the exif data, and rename each file in the directory
+# with a date string representing the first part of the filename, but preserving the original file name to preserve
+# file uniqueness and prevent collisions on pictures taken the same minute from more than one camera.
+# This will preserve sortability by filename.
+exiftool '-filename<${DateTimeOriginal}_%f.%le' -d "%Y%m%d_%H%M%S" .
+
+
+# build a nice little lightbox page for all the images in a directory
+# expect thumbnails in a thumbnail directory coming from imageindex
+# expect medium-sized images in a medium directory coming from imageindex
 # build a nice little lightbox page for all the images in a directory
 # expect thumbnails in a thumbnail directory coming from imageindex
 # expect mediums in a medium directory coming from imageindex
